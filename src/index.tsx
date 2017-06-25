@@ -1,10 +1,27 @@
 import React from "react"
 import ReactDOM from "react-dom"
+import ScalePegs from "./ScalePegs"
+import { Scale } from "./utils"
+
+const maj: Scale = [
+  true,
+  false,
+  true,
+  false,
+  true,
+  true,
+  false,
+  true,
+  false,
+  true,
+  false,
+  true,
+]
 
 function app() {
   return (
     <div>
-      hello world
+      <ScalePegs scale={maj} />
     </div>
   )
 }
