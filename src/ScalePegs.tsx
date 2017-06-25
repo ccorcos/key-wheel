@@ -1,10 +1,10 @@
 import * as React from "react"
 import * as _ from "lodash"
 import Component from "reactive-magic/component"
-import { Scale } from "./utils"
+import { Pegs, pegsToBools } from "./utils"
 
 interface ScalePegsProps {
-  scale: Scale
+  pegs: Pegs
 }
 
 class ScalePegs extends Component<ScalePegsProps> {
@@ -14,7 +14,7 @@ class ScalePegs extends Component<ScalePegsProps> {
     const noteRadius = 30
     return (
       <div>
-        {this.props.scale.map((note, index) => {
+        {pegsToBools(this.props.pegs).map((note, index) => {
           return (
             <div
               key={index}

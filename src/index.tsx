@@ -1,27 +1,16 @@
 import React from "react"
 import ReactDOM from "react-dom"
 import ScalePegs from "./ScalePegs"
-import { Scale } from "./utils"
+import KeyWheel from "./KeyWheel"
+import { Pegs } from "./utils"
 
-const maj: Scale = [
-  true,
-  false,
-  true,
-  false,
-  true,
-  true,
-  false,
-  true,
-  false,
-  true,
-  false,
-  true,
-]
+const maj: Pegs = [0, 2, 4, 5, 7, 9, 11]
 
 function app() {
   return (
     <div>
-      <ScalePegs scale={maj} />
+      <ScalePegs pegs={maj} />
+      <KeyWheel pegs={maj} />
     </div>
   )
 }
