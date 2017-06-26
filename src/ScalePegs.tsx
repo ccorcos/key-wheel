@@ -8,9 +8,9 @@ interface ScalePegsProps {}
 
 class ScalePegs extends Component<ScalePegsProps> {
   view() {
-    const center = { x: 200, y: 200 }
     const scaleRadius = 100
     const noteRadius = 30
+    const center = { x: scaleRadius, y: scaleRadius }
     const pegs = World.selectedScale.get().pegs
     return (
       <div>

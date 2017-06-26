@@ -25,9 +25,9 @@ enum Spin {
 // Direction is the direction that the edge should be layed out on the lattice.
 export enum Direction {
   up,
+  right,
   down,
   left,
-  right,
 }
 
 class Index<Type> {
@@ -181,22 +181,29 @@ function tweak(pegs: Pegs, index: number): { pegs: Pegs; spin: Spin } {
 
 // Generates the graph of connected scales, but does not compute the layout
 // or associate with the pentatonics
-function generateGraph(pegs: Pegs): Scale {
-  const scale: Scale = new Scale(pegs)
+function generateGraph(scale: Scale): Scale {
+  // generate breadth-first
+  let pending: Array<Scale> = [scale]
 
-  pegs.forEach((ignore, peg) => {
-    // try to tweak each peg
-    const result = tweak(pegs, peg)
-    if (result) {
-      // recursively build each scale
-      let nextScale = Scale.lookup(result.pegs)
-      if (!nextScale) {
-        nextScale = generateGraph(result.pegs)
+  while (pending.length > 0) {
+    const currentScale = pending.shift()
+    currentScale.pegs.forEach((ignore, peg) => {
+      // try to tweak each peg
+      const result = tweak(currentScale.pegs, peg)
+      if (result) {
+        // recursively build each currentScale
+        let nextScale = Scale.lookup(result.pegs)
+        if (!nextScale) {
+          nextScale = new Scale(result.pegs)
+          pending.push(nextScale)
+        }
+        // assign the edge
+        currentScale.edges.push(
+          new Edge(peg, result.spin, currentScale, nextScale)
+        )
       }
-      // assign the edge
-      scale.edges.push(new Edge(peg, result.spin, scale, nextScale))
-    }
-  })
+    })
+  }
 
   return scale
 }
@@ -416,7 +423,8 @@ function generateLayout(scale: Scale) {
 }
 
 export function createKeyWheelGraph(pegs: Pegs) {
-  const scale = generateGraph(pegs)
+  const scale = new Scale(pegs)
+  generateGraph(scale)
   generatePentatonics(scale)
   generateLayout(scale)
   return scale

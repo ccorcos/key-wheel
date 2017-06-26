@@ -11,11 +11,8 @@ type Point = { x: number; y: number }
 class KeyWheel extends Component<KeyWheelProps> {
   view() {
     const rendered: { [id: string]: boolean } = {}
-    let components: Array<JSX.Element> = []
-    const origin: Point = {
-      x: 700,
-      y: 300,
-    }
+    let scaleComponents: Array<JSX.Element> = []
+    let edgeComponents: Array<JSX.Element> = []
     const noteRadius = 10
     const noteSize = noteRadius * 2
     const edgePadding = 5
@@ -23,6 +20,11 @@ class KeyWheel extends Component<KeyWheelProps> {
     const edgeTotalLength = edgeLength + edgePadding * 2 + noteRadius
     const distanceBetweenNotes = edgeTotalLength + noteRadius
     const edgeWidth = 5
+    const angleEdgeDistance = distanceBetweenNotes * Math.sin(Math.PI / 4)
+    const origin: Point = {
+      x: 6 * angleEdgeDistance,
+      y: angleEdgeDistance + noteRadius,
+    }
 
     const pendingScales: Array<{ point: Point; scale: Scale }> = []
     const entry = World.entryScale.get()
@@ -33,7 +35,7 @@ class KeyWheel extends Component<KeyWheelProps> {
 
     while (pendingScales.length > 0) {
       const { point, scale } = pendingScales.shift()
-      components.push(
+      scaleComponents.push(
         <div
           key={scale.id}
           style={{
@@ -51,24 +53,31 @@ class KeyWheel extends Component<KeyWheelProps> {
             borderColor: "black",
           }}
           onClick={() => World.selectedScale.set(scale)}
+          onMouseEnter={() => World.hoveredScale.set(scale)}
+          onMouseLeave={() => {
+            if (World.hoveredScale.get().id === scale.id) {
+              World.hoveredScale.set(null)
+            }
+          }}
         />
       )
 
       scale.edges.forEach(edge => {
-        if (rendered[edge.id]) {
+        if (rendered[edge.id + edge.spin]) {
           return
         }
-        rendered[edge.id] = true
-        const rotation = edge.direction === Direction.right
-          ? -Math.PI / 4
-          : edge.direction === Direction.down
-            ? -Math.PI * 3 / 4
-            : edge.direction === Direction.left
-              ? Math.PI * 3 / 4
-              : edge.direction === Direction.up ? Math.PI / 4 : 0
-        components.push(
+        rendered[edge.id + edge.spin] = true
+        const rotation = edge.direction === Direction.up
+          ? Math.PI / 4
+          : edge.direction === Direction.right
+            ? Math.PI * 3 / 4
+            : edge.direction === Direction.down
+              ? -Math.PI * 3 / 4
+              : edge.direction === Direction.left ? -Math.PI / 4 : 0
+
+        edgeComponents.push(
           <div
-            key={edge.id}
+            key={edge.id + edge.spin}
             style={{
               position: "absolute",
               top: point.y - edgeTotalLength,
@@ -77,7 +86,6 @@ class KeyWheel extends Component<KeyWheelProps> {
               height: edgeTotalLength,
               transformOrigin: "center bottom",
               transform: `rotate(${rotation}rad)`,
-              pointerEvents: "none",
             }}
           >
             <div
@@ -89,23 +97,31 @@ class KeyWheel extends Component<KeyWheelProps> {
                 height: edgeLength,
                 backgroundColor: World.pegColors[edge.peg],
               }}
+              onMouseEnter={() => World.hoveredEdge.set(edge)}
+              onMouseLeave={() => {
+                if (World.hoveredEdge.get().id === edge.id) {
+                  World.hoveredEdge.set(null)
+                }
+              }}
             />
           </div>
         )
+
         if (!rendered[edge.toScale.id]) {
           rendered[edge.toScale.id] = true
           pendingScales.push({
             scale: edge.toScale,
             point: {
-              x: point.x + distanceBetweenNotes * Math.cos(rotation),
-              y: point.y + distanceBetweenNotes * Math.sin(rotation),
+              x: point.x + distanceBetweenNotes * Math.sin(rotation),
+              // remember +y is down the screen!
+              y: point.y - distanceBetweenNotes * Math.cos(rotation),
             },
           })
         }
       })
     }
 
-    return <div>{components}</div>
+    return <div>{edgeComponents}{scaleComponents}</div>
   }
 }
 
