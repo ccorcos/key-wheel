@@ -63,10 +63,10 @@ class KeyWheel extends Component<KeyWheelProps> {
       )
 
       scale.edges.forEach(edge => {
-        if (rendered[edge.id + edge.spin]) {
+        if (rendered[edge.id]) {
           return
         }
-        rendered[edge.id + edge.spin] = true
+        rendered[edge.id] = true
         const rotation = edge.direction === Direction.up
           ? Math.PI / 4
           : edge.direction === Direction.right
@@ -77,7 +77,7 @@ class KeyWheel extends Component<KeyWheelProps> {
 
         edgeComponents.push(
           <div
-            key={edge.id + edge.spin}
+            key={edge.id}
             style={{
               position: "absolute",
               top: point.y - edgeTotalLength,
