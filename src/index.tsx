@@ -2,20 +2,20 @@ import React from "react"
 import ReactDOM from "react-dom"
 import ScalePegs from "./ScalePegs"
 import KeyWheel from "./KeyWheel"
-import { Pegs } from "./utils"
+import Component from "reactive-magic/component"
 
-const maj: Pegs = [0, 2, 4, 5, 7, 9, 11]
-
-function app() {
-  return (
-    <div>
-      <ScalePegs pegs={maj} />
-      <KeyWheel pegs={maj} />
-    </div>
-  )
+class App extends Component<{}> {
+  view() {
+    return (
+      <div>
+        <ScalePegs />
+        <KeyWheel />
+      </div>
+    )
+  }
 }
 
 const root = document.createElement("div")
 document.body.appendChild(root)
 
-ReactDOM.render(app(), root)
+ReactDOM.render(<App />, root)

@@ -2,19 +2,19 @@ import * as React from "react"
 import * as _ from "lodash"
 import Component from "reactive-magic/component"
 import { Pegs, pegsToBools } from "./utils"
+import World from "./World"
 
-interface ScalePegsProps {
-  pegs: Pegs
-}
+interface ScalePegsProps {}
 
 class ScalePegs extends Component<ScalePegsProps> {
   view() {
     const center = { x: 200, y: 200 }
     const scaleRadius = 100
     const noteRadius = 30
+    const pegs = World.selectedScale.get().pegs
     return (
       <div>
-        {pegsToBools(this.props.pegs).map((note, index) => {
+        {pegsToBools(pegs).map((note, index) => {
           return (
             <div
               key={index}
@@ -22,7 +22,9 @@ class ScalePegs extends Component<ScalePegsProps> {
                 position: "absolute",
                 width: noteRadius,
                 height: noteRadius,
-                backgroundColor: note ? "blue" : "white",
+                backgroundColor: note
+                  ? World.pegColors[pegs.indexOf(index)]
+                  : "white",
                 border: "1px solid black",
                 borderRadius: noteRadius,
                 top:

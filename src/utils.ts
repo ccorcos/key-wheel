@@ -1,6 +1,8 @@
 import * as _ from "lodash"
 import { modPos, modMinus } from "./mod-math"
-;(window as any)["_"] = _
+
+const TheWindow = window as any
+TheWindow._ = _
 
 // Pegs are the location of the 7 pegs.
 export type Pegs = Array<number>
@@ -64,6 +66,10 @@ export class Scale {
     return _.some(this.pentatonics, p => p.id === pentatonic.id)
   }
 
+  hasDirection(direction: Direction) {
+    return _.some(this.edges, edge => edge.direction === direction)
+  }
+
   // Creates an id from a scale by creating a binary number
   static makeScaleId(pegs: Pegs): string {
     return pegsToBools(pegs).map(bool => (bool ? "1" : "0")).join("")
@@ -92,7 +98,7 @@ export class Edge {
   direction?: Direction
   constructor(peg: number, spin: Spin, fromScale: Scale, toScale: Scale) {
     // this id is the same for both spins!
-    this.id = bitwiseAndStrings(fromScale.id, toScale.id)
+    this.id = peg + bitwiseAndStrings(fromScale.id, toScale.id)
     this.fromScale = fromScale
     this.toScale = toScale
     this.spin = spin
@@ -270,15 +276,19 @@ function rotateArray<Type>(list: Array<Type>, n: number): Array<Type> {
   return list.slice(n).concat(list.slice(0, n))
 }
 
-function matchCycle(
-  edgeCycle: Array<Direction>,
-  cycle: Array<Direction>
-): boolean {
+function matchCycle(edgeCycle: Array<Edge>, cycle: Array<Direction>): boolean {
   for (let i = 0; i < edgeCycle.length; i++) {
-    if (edgeCycle[i] === undefined) {
+    const edge = edgeCycle[i]
+    const direction = cycle[i]
+    if (edge.direction === undefined) {
+      // Check that we haven't already assigned this direction another edge
+      // of the scale
+      if (edge.fromScale.hasDirection(direction)) {
+        return false
+      }
       continue
     }
-    if (edgeCycle[i] !== cycle[i]) {
+    if (edge.direction !== direction) {
       return false
     }
   }
@@ -306,7 +316,7 @@ const opposites = {
   [Direction.right]: Direction.left,
 }
 
-function findCycle(edgeCycle: Array<Direction>): Array<Direction> {
+function findCycle(edgeCycle: Array<Edge>): Array<Direction> {
   for (let i = 0; i < cycleForward.length; i++) {
     const cycle = rotateArray(cycleForward, i)
     if (matchCycle(edgeCycle, cycle)) {
@@ -375,7 +385,7 @@ function generateLayout(scale: Scale) {
     const edgePairs = pentatonic.getEdgePairs()
     // We want to preserve the cycle directions that are already written
     // to the edges.
-    const edgeCycle = edgePairs.map(([edge1]) => edge1.direction)
+    const edgeCycle = edgePairs.map(([edge1]) => edge1)
     const cycle = findCycle(edgeCycle)
     edgePairs.forEach(([edge1, edge2], index) => {
       const direction = cycle[index]
