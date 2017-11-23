@@ -83,6 +83,7 @@ class App extends Component<{}> {
 							The topology of this graph wraps around at the edges into a
 							cylinder.
 						</li>
+						<li>The inverse of this graph represents pentatonic scales.</li>
 					</ul>
 					<p>
 						That's it for now. Please let me know if you discover anything
