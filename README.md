@@ -1,21 +1,23 @@
 # Key Wheel [[Demo](https://ccorcos.github.io/key-wheel/)]
 
-This is a visualization of my friend Sean O'Reilly's math paper about music and
-group theory. It shows the relationship between various scales based on
-single-note half-step substitutions.
+A friend of mine did a math thesis about group theory applied to musical scales.
+This is an interactive visualization showing all 7-note scales (that of the
+12-note diatonic scale) that have gaps no bigger than 2 and clumps no bigger
+than 2.
 
-Currently we're only representing scales that have 7 notes with no more than 1
-half-step in a row and no steps more than a whole step.
+Every note in the diatonic scale is represented in the circle on the left. The
+colored notes represent a 7-note set that is the current scale. In the web to
+the right, the highlighted node is the current scale and the edges represent all
+1-note substitutions that give you a new scales within the given constraints
+(i.e. gaps no bigger than 2 and clumps no bigger than 2). Hovering over an edge
+shows you which not is going to move. And it turns out that any note that can
+move can only move to one place. Can click the node at the other end of the edge
+to change the scale my moving that note.
 
-## What's Next
+Here are some interesting things to explore:
 
-* [] label all the scales and all the notes
-* [] render pentatonic scale
-* [] select a subset of a scale to get a chord
-* [] rotate the scale to play the same chord in different modes
-* [] rotate the chord to play a different inversion of the same chord
+* The circle of fifths is along the center axis.
+* The topology of this graph wraps around at the edges into a cylinder.
 
-* [] create a 3d visualization with melodic scales (allowing gaps of 2)
-
-- using cubehelix with a rotation of two so similar colors are a 4th/5th away.
-	pretty cool!
+That's it for now. Please let me know if you discover anything interesting from
+this visualization!
